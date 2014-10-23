@@ -179,6 +179,18 @@ mymail.timer = timer { timeout = 60 }
 mymail.timer:connect_signal("timeout", function () mymail:set_markup( mailcount() ) end)
 mymail.timer:start()
 
+function currentview_text(val)
+  return " View: <span color=\"green\">" .. val .. "</span> | "
+end
+currentview = wibox.widget.textbox()
+currentview:set_markup(currentview_text("1"))
+for s = 1, screen.count() do
+  screen[s]:connect_signal("tag::history::update", function()
+    local tag_name = awful.tag.selected(1).name
+    currentview:set_markup(currentview_text(tag_name))
+  end)
+end
+
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
@@ -256,6 +268,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(currentview)
     right_layout:add(mytemp)
     right_layout:add(mymail)
     right_layout:add(mytextclock)
