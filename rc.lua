@@ -155,6 +155,7 @@ function mailcount()
   os.execute("~/workspace/check_unread_mail/unread.py > /tmp/.unread_mail")
   local f = io.open("/tmp/.unread_mail")
   local l = nil
+  local color = "red"
   if f ~= nil then
     l = f:read()
   end
@@ -162,9 +163,15 @@ function mailcount()
   if l == nil then
     l = "?"
   end
-  return " <span color=\"" ..
-    (l == "0" and "white" or "red") ..
-    "\">" .. l .. "</span> unread mail(s) | "
+  if l == "0" then
+    color = "white"
+  else
+    naughty.notify({
+      preset = naughty.config.presets.critical,
+      title = "You've got mail. Bitch!"
+    })
+  end
+  return " <span color=\"" .. color .. "\">" .. l .. "</span> unread mail(s) | "
 end
 
 mymail = wibox.widget.textbox( mailcount() )
